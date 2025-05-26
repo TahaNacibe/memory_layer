@@ -10,7 +10,7 @@ import ast
 # external func
 from funcs import faiss_search
 from funcs.embedder import Embedder
-from funcs.memory_utils import filter_with_fallback
+from funcs.memory_utils import filter_with_fallback, second_level_filtering
 
 
 #? Hyper Params
@@ -139,5 +139,7 @@ class MemoryManager:
         query = f"SELECT id, text, weight, attachment, lifespan, last_used FROM memories WHERE id IN ({placeholders}) LIMIT {limit}"
         self.cursor.execute(query, tuple(int(i) for i in filtered_list))
         results = self.cursor.fetchall()
+        
+        second_level_filtered_list = second_level_filtering(results)
         #TODO: filter by relevant and emotional wight before that
-        return results
+        return second_level_filtered_list
